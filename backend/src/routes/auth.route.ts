@@ -3,7 +3,6 @@ import passport from "passport";
 import { generateAccessTokenAndRefreshToken } from "@/utils/jwtToken";
 import { options } from "@/utils/cookiesOptions";
 import { db } from "@/db";
-import { env } from "process";
 import {
   getUserProfile,
   login,
@@ -15,6 +14,8 @@ import {
   verifyEmail,
 } from "@/controllers/auth.controller";
 import { isAuthenticated } from "@/middlewares/isAuthenticated";
+import { env } from "@/validators/env";
+import { ApiResponse } from "@/utils/apiResponse";
 
 const authRoute = express.Router();
 
@@ -45,7 +46,7 @@ authRoute.get(
 
     res.cookie("refreshToken", refreshToken, options);
 
-    res.redirect(`${process.env.CLIENT_URL}/dashboard`);
+    res.status(200).json(new ApiResponse(200, "Login successful", {}));
   }
 );
 
