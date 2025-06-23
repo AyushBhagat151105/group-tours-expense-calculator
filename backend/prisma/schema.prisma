@@ -44,6 +44,8 @@ model Trip {
   updatedAt  DateTime     @updatedAt
   TripMember TripMember[]
   Expense    Expense[]
+
+  @@index([createdBy])
 }
 
 model TripMember {
