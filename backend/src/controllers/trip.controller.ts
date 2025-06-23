@@ -121,22 +121,30 @@ export const updateTrip = asyncHandler(
 export const deleteTrip = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
-    const { id } = req.params;
+    const { id: tripId } = req.params;
 
-    const trip = await db.trip.delete({
-      where: {
-        id: id,
-      },
+    if (!userId) throw new ApiError(401, "Unauthorized");
+
+    const trip = await db.trip.findUnique({
+      where: { id: tripId },
+    });
+
+    if (!trip) throw new ApiError(404, "Trip not found");
+
+    if (trip.createdBy !== userId) {
+      throw new ApiError(403, "Only the creator can delete this trip");
+    }
+
+    const deletedTrip = await db.trip.delete({
+      where: { id: tripId },
       include: {
         TripMember: true,
       },
     });
 
-    if (!trip) throw new ApiError(404, "Trip not found");
-
     res
       .status(200)
-      .json(new ApiResponse(200, "Trip deleted successfully", trip));
+      .json(new ApiResponse(200, "Trip deleted successfully", deletedTrip));
   }
 );
 
@@ -198,5 +206,3 @@ export const removeMember = asyncHandler(
       .json(new ApiResponse(200, "Trip deleted successfully", tripMember));
   }
 );
-
-
