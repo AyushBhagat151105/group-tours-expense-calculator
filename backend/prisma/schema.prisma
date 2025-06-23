@@ -13,6 +13,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Test {
-  id String @id @default(uuid())
+model User {
+  id                      String         @id @default(uuid())
+  fullName                String
+  email                   String         @unique
+  password                String
+  avatar                  String?
+  isVerified              Boolean        @default(false)
+  accessToken             String?        @unique
+  verificationToken       String?        @unique
+  verificationTokenExpiry DateTime?
+  resetToken              String?        @unique
+  resetTokenExpiry        DateTime?
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+  TripMember              TripMember[]
+  Expense                 Expense[]
+  ExpenseSplit            ExpenseSplit[]
+}
+
+model Trip {
+  id         String       @id @default(uuid())
+  name       String
+  location   String
+  startDate  DateTime
+  endDate    DateTime
+  currency   String       @default("INR")
+  createdBy  String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  TripMember TripMember[]
+  Expense    Expense[]
+}
+
+model TripMember {
+  id     String @id @default(uuid())
+  tripId String
+  trip   Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tripId, userId])
+}
+
+model Expense {
+  id           String         @id @default(uuid())
+  title        String
+  amount       Float
+  category     String
+  createdAt    DateTime       @default(now())
+  paidById     String
+  paidBy       User           @relation(fields: [paidById], references: [id], onDelete: Cascade)
+  tripId       String
+  trip         Trip           @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  notes        String?
+  ExpenseSplit ExpenseSplit[]
+}
+
+model ExpenseSplit {
+  id        String  @id @default(uuid())
+  expenseId String
+  expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount    Float
+
+  @@unique([expenseId, userId])
 }
