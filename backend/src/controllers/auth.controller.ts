@@ -116,7 +116,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
       id: user.id,
     },
     data: {
-      accessToken: accessToken,
+      refreshToken: refreshToken,
     },
     select: {
       id: true,
@@ -130,7 +130,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
   return res
     .status(200)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, options)
     .json(new ApiResponse(200, "Login successful", profile));
 });
 
@@ -149,7 +149,7 @@ export const logout = asyncHandler(
     if (user) {
       await db.user.update({
         where: { id: userId },
-        data: { accessToken: null },
+        data: { refreshToken: null },
       });
       found = true;
     }
@@ -160,7 +160,7 @@ export const logout = asyncHandler(
 
     return res
       .status(200)
-      .clearCookie("refreshToken")
+      .clearCookie("accessToken")
       .json(new ApiResponse(200, "Logout successful", {}));
   }
 );

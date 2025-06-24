@@ -40,11 +40,11 @@ authRoute.get(
     await db.user.update({
       where: { id: user.id },
       data: {
-        accessToken,
+        refreshToken,
       },
     });
 
-    res.cookie("refreshToken", refreshToken, options);
+    res.cookie("accessToken", accessToken, options);
     res.redirect(
       `${env.FRONTEND_URL}/GoogleSuccess?accessToken=${accessToken}`
     );

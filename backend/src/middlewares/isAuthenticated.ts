@@ -7,20 +7,22 @@ import jwt from "jsonwebtoken";
 
 export const isAuthenticated = asyncHandler(
   async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    let { refreshToken } = req.cookies;
+    let token = req.cookies.refreshToken;
 
-    if (!refreshToken) {
-      refreshToken = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      token = req.headers.authorization?.split(" ")[1];
     }
 
-    if (!refreshToken) {
-      return next(new ApiError(403, "No refresh token provided"));
+    if (!token) {
+      return next(new ApiError(403, "No token provided"));
     }
 
-    const { id } = jwt.verify(refreshToken, env.REFRESHTOKEN) as decodeUserType;
-
-    req.user = { id };
-
-    next();
+    try {
+      const { id } = jwt.verify(token, env.ACCESSTOKEN) as decodeUserType;
+      req.user = { id };
+      next();
+    } catch {
+      return next(new ApiError(401, "Invalid or expired access token"));
+    }
   }
 );

@@ -20,7 +20,7 @@ model User {
   password                String
   avatar                  String?
   isVerified              Boolean        @default(false)
-  accessToken             String?        @unique
+  refreshToken            String?        @unique
   verificationToken       String?        @unique
   verificationTokenExpiry DateTime?
   resetToken              String?        @unique

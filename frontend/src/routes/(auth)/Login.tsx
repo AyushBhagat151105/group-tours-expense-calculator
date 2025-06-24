@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { FcGoogle } from "react-icons/fc"
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/(auth)/Login')({
   component: RouteComponent,
@@ -17,7 +18,19 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 function RouteComponent() {
   const navigate = useNavigate();
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const login = useAuthStore((state) => state.signIn);
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (!isCheckingAuth && authUser) {
+      // console.log("User is already logged in:", authUser);
+      navigate({ to: '/panal', replace: true });
+    }
+  }, [isCheckingAuth, authUser]);
+
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),

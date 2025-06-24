@@ -49,9 +49,9 @@ export const useAuthStore = create<AuthStore>()((set) => ({
     set({ isCheckingAuth: true });
     try {
       const res = await axiosInstance.get("/auth/me");
-      // console.log('auth api call')
+      // console.log("auth api call");
       set({ authUser: res.data.data });
-      // console.log('auth user', res.data.data)
+      // console.log("auth user", res.data.data);
     } catch (error) {
       set({ authUser: null });
     } finally {

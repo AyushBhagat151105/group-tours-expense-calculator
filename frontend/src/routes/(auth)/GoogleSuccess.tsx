@@ -24,7 +24,7 @@ function RouteComponent() {
       setAuth()
         .then(() => {
           toast.success('Google Login Successful!');
-          navigate({ to: '/' });
+          navigate({ to: '/panal' });
         })
         .catch(() => {
           toast.error('Failed to fetch user profile.');

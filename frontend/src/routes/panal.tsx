@@ -1,9 +1,43 @@
-import { createFileRoute } from '@tanstack/react-router'
+import LogoutButton from '@/components/auth/LogoutButton';
+import { GreetingCard } from '@/components/GreetingCard';
+import { useAuthStore } from '@/store/useAuthStore';
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/panal')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div>Hello "/panal"!</div>
+
+  const navigate = useNavigate();
+  const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+
+  useEffect(() => {
+    checkAuth();
+
+  }, [])
+
+  useEffect(() => {
+    if (!isCheckingAuth) {
+      if (!authUser) {
+        // console.log("Redirecting because user is null", authUser);
+        navigate({ to: '/Login' });
+      } else {
+        // console.log("User authenticated:", authUser);
+      }
+    }
+  }, [isCheckingAuth]); // ← only depend on isCheckingAuth
+
+
+  if (isCheckingAuth) {
+    return <div className='text-white'>Checking authentication...</div>
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <LogoutButton />
+      <GreetingCard />
+    </div>
+  )
 }
