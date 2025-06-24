@@ -1,3 +1,6 @@
 cd backend
 pnpm build
 cd ..
+
+cd frontend
+pnpm build
