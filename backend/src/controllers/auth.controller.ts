@@ -12,7 +12,7 @@ import { MailtrapMailer } from "@/utils/mail";
 import { AuthenticatedRequest } from "@/types/express";
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
-  const { email, password, username, fullName } = req.body;
+  const { email, password, fullName } = req.body;
 
   const existingUser = await db.user.findFirst({
     where: {

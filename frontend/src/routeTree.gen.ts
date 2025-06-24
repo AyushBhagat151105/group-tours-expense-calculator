@@ -9,10 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PanalRouteImport } from './routes/panal'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as authSignUpRouteImport } from './routes/(auth)/SignUp'
 import { Route as authLoginRouteImport } from './routes/(auth)/Login'
+import { Route as authGoogleSuccessRouteImport } from './routes/(auth)/GoogleSuccess'
 
+const PanalRoute = PanalRouteImport.update({
+  id: '/panal',
+  path: '/panal',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -28,39 +35,65 @@ const authLoginRoute = authLoginRouteImport.update({
   path: '/Login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authGoogleSuccessRoute = authGoogleSuccessRouteImport.update({
+  id: '/(auth)/GoogleSuccess',
+  path: '/GoogleSuccess',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/panal': typeof PanalRoute
+  '/GoogleSuccess': typeof authGoogleSuccessRoute
   '/Login': typeof authLoginRoute
   '/SignUp': typeof authSignUpRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/panal': typeof PanalRoute
+  '/GoogleSuccess': typeof authGoogleSuccessRoute
   '/Login': typeof authLoginRoute
   '/SignUp': typeof authSignUpRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/panal': typeof PanalRoute
+  '/(auth)/GoogleSuccess': typeof authGoogleSuccessRoute
   '/(auth)/Login': typeof authLoginRoute
   '/(auth)/SignUp': typeof authSignUpRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/Login' | '/SignUp'
+  fullPaths: '/' | '/panal' | '/GoogleSuccess' | '/Login' | '/SignUp'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/Login' | '/SignUp'
-  id: '__root__' | '/' | '/(auth)/Login' | '/(auth)/SignUp'
+  to: '/' | '/panal' | '/GoogleSuccess' | '/Login' | '/SignUp'
+  id:
+    | '__root__'
+    | '/'
+    | '/panal'
+    | '/(auth)/GoogleSuccess'
+    | '/(auth)/Login'
+    | '/(auth)/SignUp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PanalRoute: typeof PanalRoute
+  authGoogleSuccessRoute: typeof authGoogleSuccessRoute
   authLoginRoute: typeof authLoginRoute
   authSignUpRoute: typeof authSignUpRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/panal': {
+      id: '/panal'
+      path: '/panal'
+      fullPath: '/panal'
+      preLoaderRoute: typeof PanalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,11 +115,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/GoogleSuccess': {
+      id: '/(auth)/GoogleSuccess'
+      path: '/GoogleSuccess'
+      fullPath: '/GoogleSuccess'
+      preLoaderRoute: typeof authGoogleSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PanalRoute: PanalRoute,
+  authGoogleSuccessRoute: authGoogleSuccessRoute,
   authLoginRoute: authLoginRoute,
   authSignUpRoute: authSignUpRoute,
 }

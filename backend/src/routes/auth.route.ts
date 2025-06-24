@@ -45,8 +45,11 @@ authRoute.get(
     });
 
     res.cookie("refreshToken", refreshToken, options);
+    res.redirect(
+      `${env.FRONTEND_URL}/GoogleSuccess?accessToken=${accessToken}`
+    );
 
-    res.status(200).json(new ApiResponse(200, "Login successful", {}));
+    // res.status(200).json(new ApiResponse(200, "Login successful", {}));
   }
 );
 
