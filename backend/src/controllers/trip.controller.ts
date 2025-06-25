@@ -53,19 +53,54 @@ export const getTrip = asyncHandler(
 
     const trip = await db.trip.findFirst({
       where: {
+        id: id,
         OR: [
-          { id: id },
           { createdBy: userId as string },
-          { TripMember: { some: { userId: userId as string } } },
+          {
+            TripMember: {
+              some: {
+                userId: userId as string,
+              },
+            },
+          },
         ],
+      },
+      include: {
+        TripMember: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                fullName: true,
+                email: true,
+                avatar: true,
+                isVerified: true,
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
+          },
+        },
       },
     });
 
     if (!trip) throw new ApiError(404, "Trip not found");
 
+    console.log("Original TripMember count:", trip.TripMember.length);
+
+    const transformedTrip = {
+      ...trip,
+      members: trip.TripMember.map((member) => member.user),
+      TripMember: undefined,
+    };
+
+    console.log("Transformed members count:", transformedTrip.members.length);
+
     res
       .status(200)
-      .json(new ApiResponse(200, "Trip retrieved successfully", trip));
+      .json(
+        new ApiResponse(200, "Trip retrieved successfully", transformedTrip)
+      );
   }
 );
 
@@ -153,45 +188,77 @@ export const deleteTrip = asyncHandler(
 
 export const addMember = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const { id } = req.params;
-
+    const { id: tripId } = req.params;
     const { userId } = req.body;
 
-    const user = await db.user.findFirst({
-      where: {
-        id: userId as string,
-      },
+    if (!userId) throw new ApiError(400, "User ID is required");
+
+    const user = await db.user.findUnique({
+      where: { id: userId },
     });
 
     if (!user) throw new ApiError(404, "User not found");
 
-    const trip = await db.trip.update({
-      where: {
-        id: id,
-      },
-      data: {
-        TripMember: {
-          create: {
-            user: {
-              connect: { id: userId as string },
-            },
-          },
-        },
-      },
+    const trip = await db.trip.findUnique({
+      where: { id: tripId },
     });
 
     if (!trip) throw new ApiError(404, "Trip not found");
 
+    // Check if already a member
+    const existingMember = await db.tripMember.findUnique({
+      where: {
+        tripId_userId: {
+          tripId,
+          userId,
+        },
+      },
+    });
+
+    if (existingMember) {
+      throw new ApiError(409, "User is already a member of this trip");
+    }
+
+    // Add new member
+    const newMember = await db.tripMember.create({
+      data: {
+        userId,
+        tripId,
+      },
+    });
+
     res
       .status(200)
-      .json(new ApiResponse(200, "Trip updated successfully", trip));
+      .json(new ApiResponse(200, "Member added successfully", newMember));
   }
 );
 
 export const removeMember = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
-    const { id: tripId } = req.params;
-    const { userId } = req.body;
+    const currentUserId = req.user?.id;
+    const { id: tripId, userId } = req.params;
+
+    const trip = await db.trip.findFirst({
+      where: {
+        id: tripId,
+        createdBy: currentUserId as string,
+      },
+    });
+
+    if (!trip) throw new ApiError(403, "Only trip creator can remove members");
+
+    if (userId === trip.createdBy) {
+      throw new ApiError(400, "Trip creator cannot be removed");
+    }
+
+    const existingMember = await db.tripMember.findFirst({
+      where: {
+        tripId: tripId,
+        userId: userId,
+      },
+    });
+
+    if (!existingMember) throw new ApiError(404, "Member not found in trip");
 
     const tripMember = await db.tripMember.delete({
       where: {
@@ -202,10 +269,33 @@ export const removeMember = asyncHandler(
       },
     });
 
-    if (!tripMember) throw new ApiError(404, "Trip not found");
-
     res
       .status(200)
-      .json(new ApiResponse(200, "Trip deleted successfully", tripMember));
+      .json(new ApiResponse(200, "Member removed successfully", tripMember));
+  }
+);
+
+export const getAllUsers = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const userId = req.user?.id;
+    if (!userId) throw new ApiError(401, "Unauthorized");
+    const search = req.query.search as string;
+    const users = await db.user.findMany({
+      where: {
+        OR: [
+          { email: { contains: search, mode: "insensitive" } },
+          { fullName: { contains: search, mode: "insensitive" } },
+        ],
+      },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        avatar: true,
+      },
+    });
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Users retrieved successfully", users));
   }
 );

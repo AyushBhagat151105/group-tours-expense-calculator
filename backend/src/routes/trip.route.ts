@@ -2,6 +2,7 @@ import {
   addMember,
   createTrip,
   deleteTrip,
+  getAllUsers,
   getTrip,
   getTrips,
   removeMember,
@@ -18,4 +19,5 @@ tripRoute.get("/trips/:id", isAuthenticated, getTrip);
 tripRoute.put("/update-trip/:id", isAuthenticated, updateTrip);
 tripRoute.delete("/delete-trip/:id", isAuthenticated, deleteTrip);
 tripRoute.post("/add-member/:id", isAuthenticated, addMember);
-tripRoute.delete("/remove-member/:id", isAuthenticated, removeMember);
+tripRoute.delete("/trips/:id/members/:userId", isAuthenticated, removeMember);
+tripRoute.get("/all-users", isAuthenticated, getAllUsers);
