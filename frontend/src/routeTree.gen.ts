@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as authSignUpRouteImport } from './routes/(auth)/SignUp'
 import { Route as authLoginRouteImport } from './routes/(auth)/Login'
 import { Route as authGoogleSuccessRouteImport } from './routes/(auth)/GoogleSuccess'
+import { Route as TripIdIndexRouteImport } from './routes/trip/$id/index'
 
 const PanalRoute = PanalRouteImport.update({
   id: '/panal',
@@ -40,6 +41,11 @@ const authGoogleSuccessRoute = authGoogleSuccessRouteImport.update({
   path: '/GoogleSuccess',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TripIdIndexRoute = TripIdIndexRouteImport.update({
+  id: '/trip/$id/',
+  path: '/trip/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/GoogleSuccess': typeof authGoogleSuccessRoute
   '/Login': typeof authLoginRoute
   '/SignUp': typeof authSignUpRoute
+  '/trip/$id': typeof TripIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/GoogleSuccess': typeof authGoogleSuccessRoute
   '/Login': typeof authLoginRoute
   '/SignUp': typeof authSignUpRoute
+  '/trip/$id': typeof TripIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,12 +70,19 @@ export interface FileRoutesById {
   '/(auth)/GoogleSuccess': typeof authGoogleSuccessRoute
   '/(auth)/Login': typeof authLoginRoute
   '/(auth)/SignUp': typeof authSignUpRoute
+  '/trip/$id/': typeof TripIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/panal' | '/GoogleSuccess' | '/Login' | '/SignUp'
+  fullPaths:
+    | '/'
+    | '/panal'
+    | '/GoogleSuccess'
+    | '/Login'
+    | '/SignUp'
+    | '/trip/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/panal' | '/GoogleSuccess' | '/Login' | '/SignUp'
+  to: '/' | '/panal' | '/GoogleSuccess' | '/Login' | '/SignUp' | '/trip/$id'
   id:
     | '__root__'
     | '/'
@@ -75,6 +90,7 @@ export interface FileRouteTypes {
     | '/(auth)/GoogleSuccess'
     | '/(auth)/Login'
     | '/(auth)/SignUp'
+    | '/trip/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -83,6 +99,7 @@ export interface RootRouteChildren {
   authGoogleSuccessRoute: typeof authGoogleSuccessRoute
   authLoginRoute: typeof authLoginRoute
   authSignUpRoute: typeof authSignUpRoute
+  TripIdIndexRoute: typeof TripIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -122,6 +139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authGoogleSuccessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/trip/$id/': {
+      id: '/trip/$id/'
+      path: '/trip/$id'
+      fullPath: '/trip/$id'
+      preLoaderRoute: typeof TripIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -131,6 +155,7 @@ const rootRouteChildren: RootRouteChildren = {
   authGoogleSuccessRoute: authGoogleSuccessRoute,
   authLoginRoute: authLoginRoute,
   authSignUpRoute: authSignUpRoute,
+  TripIdIndexRoute: TripIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

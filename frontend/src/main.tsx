@@ -37,7 +37,7 @@ if (rootElement && !rootElement.innerHTML) {
 
     <TanStackQueryProvider.Provider>
       <RouterProvider router={router} />
-      <Toaster />
+      <Toaster richColors />
     </TanStackQueryProvider.Provider>
 
   )

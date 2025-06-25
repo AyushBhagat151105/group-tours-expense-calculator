@@ -12,3 +12,11 @@ export const signUpSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
+
+export const tripSchema = z.object({
+  name: z.string().min(3, "Trip name is required"),
+  location: z.string().min(2, "Location is required"),
+  startDate: z.string().nonempty("Start date is required"),
+  endDate: z.string().nonempty("End date is required"),
+  currency: z.string().min(1, "Currency is required"),
+});

@@ -83,6 +83,9 @@ export const getTrips = asyncHandler(
     });
 
     if (!trips) throw new ApiError(404, "Trip not found");
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Trip retrieved successfully", trips));
   }
 );
 

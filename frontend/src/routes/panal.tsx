@@ -1,5 +1,5 @@
-import LogoutButton from '@/components/auth/LogoutButton';
-import { GreetingCard } from '@/components/GreetingCard';
+import Header from '@/components/Header';
+import { TripGrid } from '@/components/panel/TripGrid';
 import { useAuthStore } from '@/store/useAuthStore';
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useEffect } from 'react';
@@ -27,7 +27,7 @@ function RouteComponent() {
         // console.log("User authenticated:", authUser);
       }
     }
-  }, [isCheckingAuth]); // ← only depend on isCheckingAuth
+  }, [isCheckingAuth]);
 
 
   if (isCheckingAuth) {
@@ -35,9 +35,12 @@ function RouteComponent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <LogoutButton />
-      <GreetingCard />
+    <div>
+      <Header />
+      <div className='m-4'>
+        <h2 className="text-2xl font-semibold mb-4">Your Trips</h2>
+        <TripGrid />
+      </div>
     </div>
   )
 }
