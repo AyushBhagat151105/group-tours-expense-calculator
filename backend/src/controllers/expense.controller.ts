@@ -8,25 +8,21 @@ import { Response } from "express";
 export const createExpense = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
-    const { id: tripId } = req.params;
-    const { title, amount, category, notes, splits } = req.body;
+
+    const { title, amount, category, notes, splits, tripId } = req.body;
 
     if (!userId) throw new ApiError(401, "Unauthorized");
-    if (!tripId) throw new ApiError(400, "Trip ID is required");
-    if (!title || !amount || !category)
-      throw new ApiError(400, "Invalid request");
 
+    if (!title || !amount) throw new ApiError(400, "Invalid request");
 
     if (!Array.isArray(splits) || splits.length === 0) {
       throw new ApiError(400, "At least one split is required");
     }
 
-
     const totalSplitAmount = splits.reduce(
       (sum, s) => sum + Number(s.amount),
       0
     );
-
 
     if (Number(totalSplitAmount.toFixed(2)) !== Number(amount.toFixed(2))) {
       throw new ApiError(
@@ -34,7 +30,6 @@ export const createExpense = asyncHandler(
         `Split amounts (${totalSplitAmount}) must equal the total expense amount (${amount})`
       );
     }
-
 
     const expense = await db.expense.create({
       data: {

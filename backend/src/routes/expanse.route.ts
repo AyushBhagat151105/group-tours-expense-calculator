@@ -12,8 +12,8 @@ import e, { Router } from "express";
 
 export const expenseRoute = Router();
 
-expenseRoute.get("/create-expense", isAuthenticated, createExpense);
-expenseRoute.get("/expenses", isAuthenticated, getExpenses);
+expenseRoute.post("/create-expense", isAuthenticated, createExpense);
+expenseRoute.get("/expense/:id", isAuthenticated, getExpenses);
 expenseRoute.get("/expenses/:id", isAuthenticated, getExpenseById);
 expenseRoute.put("/update-expense/:id", isAuthenticated, updateExpense);
 expenseRoute.get(

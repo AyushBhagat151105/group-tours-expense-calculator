@@ -167,12 +167,18 @@ export const useRemoveMember = () => {
   });
 };
 
+interface Split {
+  userId: string;
+  amount: number;
+}
+
 interface CreateExpensePayload {
-  tripId: string;
   title: string;
   amount: number;
-  paidBy: string;
-  splitBetween: string[];
+  category?: string;
+  notes?: string;
+  tripId: string;
+  splits: Split[];
 }
 
 const createExpense = async (data: CreateExpensePayload) => {
@@ -195,15 +201,16 @@ export const useCreateExpense = () => {
   });
 };
 
-const getExpenses = async () => {
-  const response = await axiosInstance.get("/expense/expenses");
+const getExpenses = async (id: string) => {
+  const response = await axiosInstance.get(`/expense/expense/${id}`);
   return response.data.data;
 };
 
-export const useGetExpenses = () => {
+export const useGetExpenses = (tripId: string) => {
   return useQuery({
     queryKey: ["expenses"],
-    queryFn: getExpenses,
+    queryFn: () => getExpenses(tripId),
+    enabled: !!tripId,
   });
 };
 
@@ -266,6 +273,11 @@ export const useExpenseSummary = (tripId: string) => {
   });
 };
 
+type Contributions = {
+  paidById: string;
+  _sum: { amount: number };
+}[];
+
 const getUserContribution = async (tripId: string) => {
   const response = await axiosInstance.get(
     `/expense/expense-contribution/${tripId}`
@@ -274,7 +286,7 @@ const getUserContribution = async (tripId: string) => {
 };
 
 export const useUserContribution = (tripId: string) => {
-  return useQuery({
+  return useQuery<Contributions>({
     queryKey: ["user-contribution", tripId],
     queryFn: () => getUserContribution(tripId),
     enabled: !!tripId,
