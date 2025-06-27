@@ -177,11 +177,13 @@ interface CreateExpensePayload {
   amount: number;
   category?: string;
   notes?: string;
+  paidBy: string;
   tripId: string;
   splits: Split[];
 }
 
 const createExpense = async (data: CreateExpensePayload) => {
+  console.log(data);
   const response = await axiosInstance.post("/expense/create-expense", data);
   return response.data.data;
 };

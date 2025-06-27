@@ -9,7 +9,8 @@ export const createExpense = asyncHandler(
   async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
 
-    const { title, amount, category, notes, splits, tripId } = req.body;
+    const { title, amount, category, notes, splits, tripId, paidBy } = req.body;
+    // console.log(req.body);
 
     if (!userId) throw new ApiError(401, "Unauthorized");
 
@@ -38,7 +39,7 @@ export const createExpense = asyncHandler(
         category,
         notes,
         tripId,
-        paidById: userId,
+        paidById: paidBy,
         ExpenseSplit: {
           create: splits.map((s: { userId: string; amount: number }) => ({
             userId: s.userId,

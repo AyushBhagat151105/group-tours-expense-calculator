@@ -22,7 +22,14 @@ interface User {
     avatar?: string | null;
 }
 
-export const TripMembersManager = ({ tripId }: { tripId: string }) => {
+export const TripMembersManager = ({
+    tripId,
+    currentUserId,
+}: {
+    tripId: string;
+    currentUserId: string;
+}) => {
+
     const [search, setSearch] = useState("");
     const [debouncedSearch] = useDebounce(search, 300);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -81,65 +88,67 @@ export const TripMembersManager = ({ tripId }: { tripId: string }) => {
         <div className="space-y-4 mt-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold">Trip Members</h2>
-                <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" className="gap-2">
-                            <UserPlus className="h-4 w-4" />
-                            Add Member
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Add a Member</DialogTitle>
-                        </DialogHeader>
-                        <Input
-                            type="text"
-                            placeholder="Search by email or name"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                        <ScrollArea className="h-48 border rounded-md mt-2">
-                            {isLoading ? (
-                                <div className="p-4 text-sm text-gray-500">Loading users...</div>
-                            ) : users?.length > 0 ? (
-                                users.map((user: User) => (
-                                    <div
-                                        key={user.id}
-                                        onClick={() => {
-                                            setSelectedUser(user);
-                                            setSearch(user.email);
-                                        }}
-                                        className={`p-2 px-4 cursor-pointer flex items-center gap-2 text-sm hover:bg-muted ${selectedUser?.id === user.id
-                                            ? "bg-muted font-medium"
-                                            : "text-muted-foreground"
-                                            }`}
-                                    >
-                                        <Avatar className="w-8 h-8">
-                                            <AvatarImage src={user.avatar || ""} alt={user.fullName} />
-                                            <AvatarFallback>
-                                                {user.fullName
-                                                    .split(" ")
-                                                    .map((n) => n[0])
-                                                    .join("")
-                                                    .toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <span>{user.fullName} — {user.email}</span>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="p-4 text-sm text-gray-500">No users found</div>
-                            )}
-                        </ScrollArea>
-                        <Button
-                            onClick={handleAddMember}
-                            disabled={addMemberMutation.isPending}
-                            className="w-full mt-2"
-                        >
-                            {addMemberMutation.isPending ? "Adding..." : "Add Member"}
-                        </Button>
-                    </DialogContent>
-                </Dialog>
+                {trip?.createdBy === currentUserId && (
+                    <Dialog open={open} onOpenChange={setOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="gap-2">
+                                <UserPlus className="h-4 w-4" />
+                                Add Member
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Add a Member</DialogTitle>
+                            </DialogHeader>
+                            <Input
+                                type="text"
+                                placeholder="Search by email or name"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                            <ScrollArea className="h-48 border rounded-md mt-2">
+                                {isLoading ? (
+                                    <div className="p-4 text-sm text-gray-500">Loading users...</div>
+                                ) : users?.length > 0 ? (
+                                    users.map((user: User) => (
+                                        <div
+                                            key={user.id}
+                                            onClick={() => {
+                                                setSelectedUser(user);
+                                                setSearch(user.email);
+                                            }}
+                                            className={`p-2 px-4 cursor-pointer flex items-center gap-2 text-sm hover:bg-muted ${selectedUser?.id === user.id
+                                                ? "bg-muted font-medium"
+                                                : "text-muted-foreground"
+                                                }`}
+                                        >
+                                            <Avatar className="w-8 h-8">
+                                                <AvatarImage src={user.avatar || ""} alt={user.fullName} />
+                                                <AvatarFallback>
+                                                    {user.fullName
+                                                        .split(" ")
+                                                        .map((n) => n[0])
+                                                        .join("")
+                                                        .toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <span>{user.fullName} — {user.email}</span>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="p-4 text-sm text-gray-500">No users found</div>
+                                )}
+                            </ScrollArea>
+                            <Button
+                                onClick={handleAddMember}
+                                disabled={addMemberMutation.isPending}
+                                className="w-full mt-2"
+                            >
+                                {addMemberMutation.isPending ? "Adding..." : "Add Member"}
+                            </Button>
+                        </DialogContent>
+                    </Dialog>
+                )}
             </div>
 
             <ScrollArea className="max-h-64 border rounded-md p-2">
@@ -173,7 +182,7 @@ export const TripMembersManager = ({ tripId }: { tripId: string }) => {
                                 </div>
                             </div>
                             {/* Only show remove button if not the creator */}
-                            {member.id !== trip?.createdBy && (
+                            {trip?.createdBy === currentUserId && member.id !== trip.createdBy && (
                                 <Button
                                     size="icon"
                                     variant="ghost"
@@ -183,6 +192,7 @@ export const TripMembersManager = ({ tripId }: { tripId: string }) => {
                                     <X className="w-4 h-4" />
                                 </Button>
                             )}
+
                         </div>
                     ))
                 ) : (

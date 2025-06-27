@@ -55,7 +55,8 @@ export function TripCard({ trip }: TripCardProps) {
                 <CardTitle className="text-lg font-semibold">{trip.name}</CardTitle>
                 <p className="text-sm text-muted-foreground">{trip.location}</p>
                 <p className="text-xs text-muted-foreground">
-                    {trip.startDate} → {trip.endDate}
+                    {new Date(trip?.startDate).toLocaleDateString()} -{" "}
+                    {new Date(trip?.endDate).toLocaleDateString()}
                 </p>
             </CardContent>
 
