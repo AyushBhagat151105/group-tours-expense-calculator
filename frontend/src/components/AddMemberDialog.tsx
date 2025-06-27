@@ -91,7 +91,7 @@ export const TripMembersManager = ({
                 {trip?.createdBy === currentUserId && (
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="outline" size="sm" className="gap-2">
+                            <Button variant="outline" size="sm" className="gap-2 cursor-pointer">
                                 <UserPlus className="h-4 w-4" />
                                 Add Member
                             </Button>
@@ -187,7 +187,7 @@ export const TripMembersManager = ({
                                     size="icon"
                                     variant="ghost"
                                     onClick={() => handleRemoveMember(member.id)}
-                                    className="text-destructive hover:text-red-600"
+                                    className="text-destructive hover:text-red-600 cursor-pointer"
                                 >
                                     <X className="w-4 h-4" />
                                 </Button>

@@ -59,7 +59,7 @@ export function TripExpenseManager({ tripId }: { tripId: string }) {
                     <h2 className="text-xl font-semibold">Shared Expenses</h2>
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="default">+ Add Expense</Button>
+                            <Button variant="default" className="cursor-pointer">+ Add Expense</Button>
                         </DialogTrigger>
                         <DialogContent className="max-w-md">
                             <DialogHeader>
@@ -90,7 +90,7 @@ export function TripExpenseManager({ tripId }: { tripId: string }) {
             {/* Contributions */}
             <div>
                 <h3 className="text-lg font-semibold mb-2 text-muted-foreground">User Contributions</h3>
-                <ContributionsList contributions={contributions} members={members} currency={currency} />
+                {contributions && <ContributionsList contributions={contributions} members={members} currency={currency} />}
             </div>
         </div>
     );
