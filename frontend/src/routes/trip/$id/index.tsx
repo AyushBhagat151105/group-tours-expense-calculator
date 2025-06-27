@@ -1,7 +1,7 @@
 import { TripMembersManager } from "@/components/AddMemberDialog";
 import { TripExpenseManager } from "@/components/TripExpenseManager/TripExpenseManager";
 import { useAuthStore } from "@/store/useAuthStore";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/trip/$id/")({
   component: RouteComponent,
@@ -10,6 +10,11 @@ export const Route = createFileRoute("/trip/$id/")({
 function RouteComponent() {
   const { id } = Route.useParams();
   const { authUser } = useAuthStore()
+  const navigate = useNavigate();
+
+  if (!authUser) {
+    navigate({ to: "/Login" });
+  }
 
   return (
     <div className="p-6 max-w-5xl mx-auto space-y-10">

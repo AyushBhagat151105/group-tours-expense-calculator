@@ -8,14 +8,14 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {
-    useExpenseSummary,
+
     useUserContribution,
     useGetTripById,
     useGetExpenses,
 } from "@/query/Trips";
 import ExpenseForm from "./ExpenseForm";
 import ExpenseList from "./ExpenseList";
-import ExpenseSummary from "./ExpenseSummary";
+
 import ContributionsList from "./ContributionsList";
 import { ScrollArea } from "@/components/ui/scroll-area"
 
@@ -23,7 +23,7 @@ export function TripExpenseManager({ tripId }: { tripId: string }) {
     const [open, setOpen] = useState(false);
 
     const { data: expenses = [] } = useGetExpenses(tripId);
-    const { data: summary } = useExpenseSummary(tripId);
+
     const { data: contributions } = useUserContribution(tripId);
     const { data: trip } = useGetTripById(tripId);
 
@@ -81,15 +81,10 @@ export function TripExpenseManager({ tripId }: { tripId: string }) {
 
             </div>
 
-            {/* Summary */}
-            <div>
-                <h3 className="text-lg font-semibold mb-2 text-muted-foreground">Total Summary</h3>
-                <ExpenseSummary summary={summary} currency={currency} members={members} />
-            </div>
 
             {/* Contributions */}
             <div>
-                <h3 className="text-lg font-semibold mb-2 text-muted-foreground">User Contributions</h3>
+                <h3 className="text-lg font-semibold mb-2 text-muted-foreground">Members Contributions</h3>
                 {contributions && <ContributionsList contributions={contributions} members={members} currency={currency} />}
             </div>
         </div>
